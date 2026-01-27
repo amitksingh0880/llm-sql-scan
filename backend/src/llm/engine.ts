@@ -10,21 +10,47 @@ export class LLMEngine {
     }
 
     async analyzeSchema(schemaSummary: string): Promise<string> {
-        const systemPrompt = `You are a SQL Security Expert. Find security flaws.
-Output ONLY a Markdown table with columns: ISSUE, TABLE, IMPACT, FIX.
-Do not use conversational filler.`;
+        const systemPrompt = `You are an elite SQL Security Architect.
+Analyze the provided database schema for architectural flaws, security risks, and optimization opportunities.
 
-        const userPrompt = `Analyze this schema:
+RULE: Your output MUST be strictly valid Markdown.
+RULE: Use ### [Title] for each finding.
+RULE: Use SQL code blocks for any code suggestions.
+RULE: If no issues exist, respond ONLY with "No critical security issues identified in schema."
+
+TEMPLATE for each finding:
+### [Issue Name]
+- **Vector**: [The technical vulnerability]
+- **Impact**: High/Medium/Low
+- **Resolution**: 
+\`\`\`sql
+[Optimized/Secure SQL code]
+\`\`\``;
+
+        const userPrompt = `DATABASE SCHEMA SUMMARY:
 ${schemaSummary}`;
 
         return this.query(systemPrompt, userPrompt);
     }
 
     async analyzeCode(objectType: string, objectName: string, code: string): Promise<string> {
-        const systemPrompt = `You are a SQL Expert. Review code for SQL Injection and Performance.
-Output ONLY a Markdown table with columns: VULNERABILITY, LINE, REFACTOR.`;
+        const systemPrompt = `You are a Senior Security Auditor specializing in MSSQL.
+Analyze the following ${objectType} for vulnerabilities (SQLi, Logic flaws, Permission issues).
 
-        const userPrompt = `Analyze ${objectType} "${objectName}":
+RULE: Be concise. Avoid conversational filler.
+RULE: Wrap ALL SQL in triple backticks with 'sql' language specifier.
+RULE: If clean, respond ONLY with "Security audit passed for ${objectName}."
+
+TEMPLATE:
+### [Severity] - [Vulnerability Name]
+- **Details**: [Precise explanation]
+- **Fixed Implementation**: 
+\`\`\`sql
+[Refactored secure code]
+\`\`\``;
+
+        const userPrompt = `AUDIT TARGET: ${objectType} [${objectName}]
+CODE:
 \`\`\`sql
 ${code}
 \`\`\``;
