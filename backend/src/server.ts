@@ -5,6 +5,9 @@ import path from 'path';
 import { Scanner } from './analyzer/scanner';
 import 'dotenv/config';
 
+// Disable headers timeout for LLM calls (undici/fetch)
+process.env.UNDICI_HEADERS_TIMEOUT = '0';
+
 const app = express();
 const PORT = 3000;
 
